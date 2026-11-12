@@ -1,0 +1,41 @@
+title: What the IDS is alerting on
+question: Which Suricata signatures fired, how often, and from how many sources?
+techniques: [T1595, T1190]
+data: [suricata]
+compare: [signature_id, alerts, sources]
+concepts: |
+  The first triage step on any alert queue is not to open the top alert, it is to **group**. A
+  signature that fires a thousand times from one address is one scanner; a signature that fires
+  three times from three unrelated addresses may be a campaign. Counting alerts and distinct
+  sources per signature separates the two, and severity (1 is the most severe in Suricata) tells
+  you where to start.
+
+  Group by `signature_id`, not the signature text: the text changes between rule revisions, the
+  ID does not. In Wazuh every decoded field is stored as text (`data.severity` is a keyword), so a
+  numeric `min` over it is not possible; there the severity shows up as the rule level instead
+  (rules 100200-100202).
+splunk: |
+  index=honeypot_demo sourcetype=suricata:alert
+  | stats count AS alerts dc(src_ip) AS sources min(severity) AS severity
+          first(signature) AS signature by signature_id
+  | sort severity - alerts
+sentinel: |
+  HP_Suricata
+  | summarize alerts = count(), sources = array_length(make_set(src_ip)), severity = min(severity),
+              signature = take_any(signature) by signature_id
+  | sort by severity asc, alerts desc
+wazuh:
+  dql: |
+    rule.groups:suricata
+  dsl: |
+    {
+      "query": { "term": { "rule.groups": "suricata" } },
+      "aggs": {
+        "signature_id": { "terms": { "field": "data.signature_id", "size": 10000 },
+          "aggs": {
+            "alerts":    { "value_count": { "field": "rule.id" } },
+            "sources":   { "cardinality": { "field": "data.src_ip", "precision_threshold": 40000 } },
+            "signature": { "top_hits": { "size": 1, "_source": ["data.signature"] } }
+          } }
+      }
+    }

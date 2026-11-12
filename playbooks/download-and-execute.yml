@@ -1,0 +1,44 @@
+title: Downloaded files, and whether they were run
+question: Which files did attackers download, from how many sources, and in how many of those sessions did they then try to run something?
+techniques: [T1105, T1059.004]
+compare: [shasum, downloads, sources, sessions_that_ran]
+concepts: |
+  Group downloads by the file's **hash**, not by URL: the same payload is often served from many
+  addresses and names, and a hash is what you would hand to a threat-intelligence lookup or a
+  block list.
+
+  "Did they run it?" is approximated per session: a download counts as run when the same session
+  also typed a command containing `chmod` or `./`. That is a heuristic, not proof. A session can
+  run a file with `sh file` or pipe it straight into a shell, which this misses, and that is worth
+  knowing when you read the numbers.
+splunk: |
+  index=honeypot_demo sourcetype=cowrie:json
+      ((eventid="cowrie.session.file_download" shasum=*)
+       OR (eventid="cowrie.command.input" (input="*chmod*" OR input="*./*")))
+  | eval ran=if(eventid="cowrie.command.input", 1, 0)
+  | eventstats max(ran) AS session_ran by session
+  | where eventid="cowrie.session.file_download"
+  | stats count AS downloads dc(src_ip) AS sources
+          dc(eval(if(session_ran=1, session, null()))) AS sessions_that_ran
+          first(url) AS example_url by shasum
+  | sort - downloads
+sentinel: |
+  let ran = HP_Cowrie
+      | where eventid == "cowrie.command.input" and (input contains "chmod" or input contains "./")
+      | distinct session
+      | extend executed = 1;
+  HP_Cowrie
+  | where eventid == "cowrie.session.file_download" and isnotempty(shasum)
+  | join kind=leftouter ran on session
+  | summarize downloads = count(), sources = array_length(make_set(src_ip)),
+              sessions_that_ran = array_length(make_set_if(session, executed == 1)),
+              example_url = take_any(url) by shasum
+  | sort by downloads desc
+differences: |
+  **No Wazuh query here, on purpose.** The question joins two kinds of events (a download and a
+  later command) on the session, and then regroups by file hash. Splunk does that with
+  `eventstats`, KQL with `join`; Wazuh's Discover and the OpenSearch query DSL cannot join
+  documents. In Wazuh you would answer it in two pivots: filter `rule.id:100104` to list the
+  sessions that downloaded something, then search those sessions for `chmod` or `./`. For anything
+  you want to catch continuously, the Wazuh answer is a correlation rule (`if_matched_sid` with
+  `same_field`), not a query.

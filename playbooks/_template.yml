@@ -1,0 +1,14 @@
+# Copy to playbooks/<id>.yml. A playbook is published only when every query below has a current result
+# in results/verified.json (python tools/verify.py). Changing a query makes its result stale.
+title:
+question:          # the investigation question, one sentence
+techniques: []
+compare: []        # result columns whose values must agree across tools (e.g. [src_ip, failures])
+concepts: |        # how to think about this question (Markdown)
+splunk: |          # SPL on index=honeypot_demo
+sentinel: |        # KQL on HP_Cowrie / HP_Suricata
+wazuh:
+  dql: |           # Discover filter
+  dsl: |           # the same question as an OpenSearch query (JSON), for Dev Tools or the API
+differences: |     # if the tools disagree: why (optional)
+my_notes: |        # written by me (the owner) only

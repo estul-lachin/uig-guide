@@ -1,0 +1,62 @@
+title: Network alert first, then a login
+question: Which sources triggered a Suricata alert and later logged in to the honeypot?
+techniques: [T1595, T1110, T1078]
+data: [suricata, cowrie]
+compare: [src_ip, alerts, logins]
+concepts: |
+  Two sensors, one question. Suricata sees packets on the whole host; Cowrie sees what happens
+  inside a shell session. Joining them on the **source address** answers whether the noisy
+  scanner from the IDS is the same actor that later got in, which is the difference between
+  "background scanning" and "an intrusion that started with reconnaissance".
+
+  Order matters: require the first alert to come before the first login. Time zones matter too:
+  both sources are stored in UTC here; mixing a local-time IDS log with a UTC application log is a
+  classic way to get this join wrong.
+splunk: |
+  index=honeypot_demo (sourcetype=suricata:alert) OR (sourcetype=cowrie:json eventid="cowrie.login.success")
+  | stats count(eval(sourcetype="suricata:alert")) AS alerts
+          count(eval(sourcetype="cowrie:json")) AS logins
+          min(eval(if(sourcetype="suricata:alert", _time, null()))) AS first_alert
+          min(eval(if(sourcetype="cowrie:json", _time, null()))) AS first_login
+          by src_ip
+  | where alerts > 0 AND logins > 0 AND first_alert < first_login
+  | eval first_alert=strftime(first_alert, "%F %T"), first_login=strftime(first_login, "%F %T")
+  | sort - alerts
+sentinel: |
+  let alerts = HP_Suricata
+      | summarize alerts = count(), first_alert = min(TimeGenerated) by src_ip;
+  HP_Cowrie
+  | where eventid == "cowrie.login.success"
+  | summarize logins = count(), first_login = min(TimeGenerated) by src_ip
+  | join kind=inner alerts on src_ip
+  | where first_alert < first_login
+  | project src_ip, alerts, logins, first_alert, first_login
+  | sort by alerts desc
+wazuh:
+  dql: |
+    rule.groups:suricata or rule.id:100101
+  dsl: |
+    {
+      "query": { "bool": { "should": [ { "term": { "rule.groups": "suricata" } },
+                                       { "term": { "rule.id": "100101" } } ], "minimum_should_match": 1 } },
+      "aggs": {
+        "src_ip": { "terms": { "field": "data.src_ip", "size": 10000 },
+          "aggs": {
+            "alerts": { "filter": { "term": { "rule.groups": "suricata" } },
+                        "aggs": { "first": { "min": { "field": "timestamp" } } } },
+            "logins": { "filter": { "term": { "rule.id": "100101" } },
+                        "aggs": { "first": { "min": { "field": "timestamp" } } } },
+            "alert_before_login": { "bucket_selector": {
+              "buckets_path": { "a": "alerts._count", "l": "logins._count", "fa": "alerts>first", "fl": "logins>first" },
+              "script": "params.a > 0 && params.l > 0 && params.fa < params.fl" } }
+          } }
+      }
+    }
+differences: |
+  **Why Wazuh can return one row fewer.** Wazuh stores an alert's time in milliseconds; Cowrie,
+  Suricata, Splunk and Sentinel keep microseconds. On 2026-11-11 one source raised its Suricata
+  alert 0.7 ms before it logged in. Splunk and Sentinel see "alert, then login"; in Wazuh both
+  events carry the same millisecond, `first_alert < first_login` is false, and the source drops
+  out. Changing `<` to `<=` would bring it back, but would also count sources whose login really
+  came first within the same millisecond. Neither is wrong; it is a precision limit worth knowing
+  before you build a sequence detection on Wazuh timestamps.

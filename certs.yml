@@ -1,0 +1,5 @@
+# Certificates I hold. Each needs the issuer's public verification link.
+# - name: Microsoft Certified: Security Operations Analyst Associate (SC-200)
+#   issuer: Microsoft
+#   date: YYYY-MM-DD
+#   verify: https://learn.microsoft.com/...

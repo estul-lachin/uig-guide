@@ -1,0 +1,124 @@
+{
+ "download-and-execute": {
+  "sentinel": {
+   "day": "2026-11-11",
+   "key_hash": "eeb543b22e0fec5b65974478ffb2b3a6239e4419f73bbf76c5ec3a7fe7fe1dda",
+   "rows": 3,
+   "sha": "dd762e8bdfd72c3ce10accbbe11f4f41c16d24b05a4c4536c7049bb4eb35b6c3",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Microsoft Sentinel (Log Analytics)"
+  },
+  "splunk": {
+   "day": "2026-11-11",
+   "key_hash": "eeb543b22e0fec5b65974478ffb2b3a6239e4419f73bbf76c5ec3a7fe7fe1dda",
+   "rows": 3,
+   "sha": "1710e061d5acfd42d52a52df09293a9268cfdd4f8641072b9178c336acc3b17d",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Splunk 10.4.5"
+  }
+ },
+ "login-credentials": {
+  "sentinel": {
+   "day": "2026-11-11",
+   "key_hash": "82960462d43a1becef5a36fac4f674191174a07d33f0322080007c7a9c916b64",
+   "rows": 79,
+   "sha": "148597d569b0865ab3b38a929a1f60725c801c8a728a2f6272ba7d421c19d251",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Microsoft Sentinel (Log Analytics)"
+  },
+  "splunk": {
+   "day": "2026-11-11",
+   "key_hash": "82960462d43a1becef5a36fac4f674191174a07d33f0322080007c7a9c916b64",
+   "rows": 79,
+   "sha": "7ad0c6b30b77626478284ec344b478ba59232334cc7602fd03318ebd8477a271",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Splunk 10.4.5"
+  },
+  "wazuh": {
+   "day": "2026-11-11",
+   "key_hash": "82960462d43a1becef5a36fac4f674191174a07d33f0322080007c7a9c916b64",
+   "rows": 79,
+   "sha": "2c515c9a17774a05d929dc810000badf0080d5e4f1081d96198771fbe05d6081",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Wazuh 4.14.9"
+  }
+ },
+ "persistence-attempts": {
+  "sentinel": {
+   "day": "2026-11-11",
+   "key_hash": "7088c122eb1e5bcb3bfd28afba0567b5db78a11cb96f44241224cd64683ef0f3",
+   "rows": 6,
+   "sha": "363770bbadce682cd6d6319c202bd8960d62cce59f6bb0594321fc0a729da8db",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Microsoft Sentinel (Log Analytics)"
+  },
+  "splunk": {
+   "day": "2026-11-11",
+   "key_hash": "7088c122eb1e5bcb3bfd28afba0567b5db78a11cb96f44241224cd64683ef0f3",
+   "rows": 6,
+   "sha": "1892731617601c7d0b9b37133b80153c18b88f0f9176f3414aa7995fe0e90df0",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Splunk 10.4.5"
+  },
+  "wazuh": {
+   "day": "2026-11-11",
+   "key_hash": "7088c122eb1e5bcb3bfd28afba0567b5db78a11cb96f44241224cd64683ef0f3",
+   "rows": 6,
+   "sha": "eb7b962a8a9c1343d2a7c3cedb06dbcd4e3115b288de17eeaf9b2834ac7ab099",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Wazuh 4.14.9"
+  }
+ },
+ "scan-then-login": {
+  "sentinel": {
+   "day": "2026-11-11",
+   "key_hash": "5f85eb6797ff8f1a0155479bc1d7df120a3c001575039ad6eb389d07ed83c0a6",
+   "rows": 10,
+   "sha": "9e87571ac3afea7a74a28b5f1168c3d9b1e5de0d2074aff8e9bbbee50f0b01ec",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Microsoft Sentinel (Log Analytics)"
+  },
+  "splunk": {
+   "day": "2026-11-11",
+   "key_hash": "5f85eb6797ff8f1a0155479bc1d7df120a3c001575039ad6eb389d07ed83c0a6",
+   "rows": 10,
+   "sha": "f1a0e2c5faa7554998fa592ec5308f132c919db90ced6178f6f72acb72f725d1",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Splunk 10.4.5"
+  },
+  "wazuh": {
+   "day": "2026-11-11",
+   "key_hash": "22f7071be8bf84c76d10daa70e69da48f324ffa1ae66e35613736c7266827af6",
+   "rows": 9,
+   "sha": "50fd260f9a52bc46feb06317022709fa1c9a0e52ef4a13c6002b1b9f882da648",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Wazuh 4.14.9"
+  }
+ },
+ "suricata-signature-triage": {
+  "sentinel": {
+   "day": "2026-11-11",
+   "key_hash": "78c7b64d63df100c3d15d28be957bcbf933609e24756cf70a4b8b268b7079b3d",
+   "rows": 163,
+   "sha": "c72897d5038607d7530b0fc6304f48e8544f3169c3d80e398b04d84ff9f04bae",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Microsoft Sentinel (Log Analytics)"
+  },
+  "splunk": {
+   "day": "2026-11-11",
+   "key_hash": "78c7b64d63df100c3d15d28be957bcbf933609e24756cf70a4b8b268b7079b3d",
+   "rows": 163,
+   "sha": "b536c315e9303f941aae18d20f522d4987eb64bc650712cdf7b2f47acc272154",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Splunk 10.4.5"
+  },
+  "wazuh": {
+   "day": "2026-11-11",
+   "key_hash": "78c7b64d63df100c3d15d28be957bcbf933609e24756cf70a4b8b268b7079b3d",
+   "rows": 163,
+   "sha": "272126a6d1e8560fe419a77fc98bf43e1030da9575bb36f672fa6503ea63a977",
+   "verified_at": "2026-11-12T18:50:50Z",
+   "version": "Wazuh 4.14.9"
+  }
+ }
+}

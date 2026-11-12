@@ -1,0 +1,13 @@
+# Copy to recordings/<id>.yml; put the video in recordings/media/. Published once `date` is set.
+# Record on pseudonymized data only (HP_Cowrie, index=honeypot_demo, the demo Wazuh). Crop to the app:
+# no Azure account menu, subscription or tenant ID, no browser bookmarks. Export with:
+#   ffmpeg -i in.mov -vf "scale='min(1600,iw)':-2,fps=15" -c:v libvpx-vp9 -crf 40 -b:v 0 -an out.webm
+title:
+tool: splunk        # splunk | sentinel | wazuh
+date:               # YYYY-MM-DD
+file:               # e.g. splunk-bruteforce.webm (under 10 MB)
+poster:             # optional still image
+captions:           # optional WebVTT file
+seconds:            # length, for the total on the evidence page
+summary:
+chapters: []        # e.g. [{t: "0:00", label: "Alert"}, {t: "0:40", label: "Pivot on the source"}]

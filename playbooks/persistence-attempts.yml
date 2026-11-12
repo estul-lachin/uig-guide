@@ -1,0 +1,45 @@
+title: Persistence attempts after login
+question: Which sources tried to plant an SSH key or a cron job, and how often?
+techniques: [T1098.004, T1053.003]
+compare: [src_ip, technique, commands, sessions]
+concepts: |
+  Getting in is step one; staying in is what turns a login into an incident. On Linux the two
+  cheapest ways are adding a key to `~/.ssh/authorized_keys` (no password needed next time) and
+  scheduling a job with `crontab` (runs again even after a reboot).
+
+  Searching the typed command line for those two strings is crude but effective. Map each hit to
+  its ATT&CK technique in the query itself, so the result is already in the language of the
+  incident report. When a command does both, it counts as the SSH key technique, in all three tools.
+
+  Wazuh does this the Wazuh way: not in the query but in two rules (`100110`, `100111` in the demo's
+  `local_rules.xml`) that match the command line and carry the ATT&CK ID, so the dashboard's MITRE
+  view picks them up and the query only has to count `rule.mitre.id`.
+splunk: |
+  index=honeypot_demo sourcetype=cowrie:json eventid="cowrie.command.input"
+      (input="*authorized_keys*" OR input="*crontab*")
+  | eval technique=if(like(lower(input), "%authorized_keys%"), "T1098.004", "T1053.003")
+  | stats count AS commands dc(session) AS sessions by src_ip technique
+  | sort - commands
+sentinel: |
+  HP_Cowrie
+  | where eventid == "cowrie.command.input" and (input contains "authorized_keys" or input contains "crontab")
+  | extend technique = iff(input contains "authorized_keys", "T1098.004", "T1053.003")
+  | summarize commands = count(), sessions = array_length(make_set(session)) by src_ip, technique
+  | sort by commands desc
+wazuh:
+  dql: |
+    rule.groups:persistence and rule.groups:cowrie
+  dsl: |
+    {
+      "query": { "terms": { "rule.id": ["100110", "100111"] } },
+      "aggs": {
+        "src_ip": { "terms": { "field": "data.src_ip", "size": 10000 },
+          "aggs": {
+            "technique": { "terms": { "field": "rule.mitre.id", "size": 10 },
+              "aggs": {
+                "commands": { "value_count": { "field": "rule.id" } },
+                "sessions": { "cardinality": { "field": "data.session", "precision_threshold": 40000 } }
+              } }
+          } }
+      }
+    }
