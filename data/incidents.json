@@ -1,0 +1,19 @@
+{
+ "generated_at": "2026-11-13T06:25:30Z",
+ "since": "2026-11-09",
+ "incidents": 353,
+ "open": 269,
+ "closed_by_playbook": 78,
+ "closed_by_me": 6,
+ "with_my_comment": 6,
+ "close_minutes_median": 3398,
+ "classification": {
+  "True positive: suspicious activity": 6
+ },
+ "daily": [
+  {
+   "day": "2026-11-13",
+   "closed_by_me": 6
+  }
+ ]
+}

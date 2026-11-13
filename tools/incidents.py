@@ -49,7 +49,9 @@ SecurityIncident
     Closer startswith "Playbook - " or Closer startswith "Automation rule - " or Closer == "Alert Grouping",
     "machine", "person")
 // every comment has one "name" key under author; playbook comments say "Comment created from playbook"
+// a note typed in the close dialog lands in ClassificationComment, not in Comments
 | extend MyComments = countof(C, '"name":"') - countof(C, "Comment created from playbook")
+    + iff(CloserKind == "person" and isnotempty(ClassificationComment), 1, 0)
 | project Day = format_datetime(FirstClosed, "yyyy-MM-dd"), Status, Classification, ClassificationReason,
     CloserKind, MyComments, Minutes = datetime_diff("minute", FirstClosed, CreatedTime)
 """
